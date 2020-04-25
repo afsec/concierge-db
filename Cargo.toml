@@ -1,0 +1,25 @@
+[package]
+name = 'concierge-db'
+version = '0.1.0'
+authors = ['Antonio Feitosa <antonio.cfc@gmail.com>']
+edition = '2018'
+
+[dependencies]
+tide = '0.8.0'
+r2d2 = '0.8.8'
+r2d2_sqlite = '0.15.0'
+clap = '2.33.0'
+http-types = '1.2.0'
+mime = '0.3.16'
+
+[dependencies.rusqlite]
+features = ['bundled']
+version = '0.22.0'
+
+[dependencies.serde]
+features = ['derive']
+version = '1.0.106'
+
+[dependencies.async-std]
+version = '1.5.0'
+features = ['attributes']
