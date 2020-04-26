@@ -3,7 +3,7 @@ use tide::Request;
 use super::model;
 use super::view;
 
-pub async fn show_tables(request: Request<()>) -> tide::Result {
+pub async fn handler(request: Request<()>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::StatusCode;
     // Authorization:
@@ -13,12 +13,10 @@ pub async fn show_tables(request: Request<()>) -> tide::Result {
                 let view = view::show_tables(model);
                 Ok(view)
             }
-            Err(error) => {
-                Err(http_types::Error::from_str(
-                    StatusCode::InternalServerError,
-                    format!("model::show_tables -> Err({})",error),
-                ))
-            }
+            Err(error) => Err(http_types::Error::from_str(
+                StatusCode::InternalServerError,
+                format!("model::show_tables -> Err({})", error),
+            )),
         }
     } else {
         Err(http_types::Error::from_str(

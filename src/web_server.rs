@@ -13,11 +13,12 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
         app.at("/").get(main_index);
         app.at("/auth").get(check_auth);
         app.at("/api/show-tables")
-            .get(crate::api::show_tables::presenter::show_tables);
+            .get(crate::api::show_tables::presenter::handler);
+        app.at("/api/:table/count-rows")
+            .get(crate::api::read_count::presenter::handler);
+
         // app.at("/auth")
         //     .post(crate::api::show_columns::presenter::show_columns);
-        // app.at("/auth")
-        //     .post(crate::api::read_count::presenter::read_count);
         // app.at("/auth")
         //     .post(crate::api::read_all::presenter::read_all);
         // app.at("/auth")
