@@ -11,7 +11,7 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
         // let mut app = Server::with_state();
         let mut app = Server::new();
         app.at("/").get(main_index);
-        // app.at("/auth").get(check_auth);
+        app.at("/auth").get(check_auth);
         app.at("/api/show-tables")
             .get(crate::api::show_tables::presenter::show_tables);
         // app.at("/auth")
@@ -39,7 +39,7 @@ pub async fn main_index(request: Request<()>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::{headers::CONTENT_TYPE, StatusCode};
     use mime::TEXT_HTML_UTF_8;
-    // Authorization:
+    // Authentication
     if is_authenticated(&request) {
         let response = Response::new(StatusCode::Ok)
             .body_string(include_str!("./../html/home.html").to_string())
@@ -53,6 +53,19 @@ pub async fn main_index(request: Request<()>) -> tide::Result {
     }
 }
 
+pub async fn check_auth(request: Request<()>) -> tide::Result {
+    use crate::auth::is_authenticated;
+    use http_types::StatusCode;
+    if is_authenticated(&request) {
+        let response = Response::new(StatusCode::Accepted);
+        Ok(response)
+    } else {
+        Err(http_types::Error::from_str(
+            StatusCode::Unauthorized,
+            "Access Denied",
+        ))
+    }
+}
 
 
 // #[catch(404)]
