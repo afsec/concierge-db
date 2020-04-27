@@ -2,13 +2,12 @@ use crate::api::{Coluna, ColunaData};
 
 use crate::api::StatusMessage;
 
-pub fn update_field(table_name: String, data_str: String) -> Result<StatusMessage, StatusMessage> {
-    use std::convert::TryFrom;
-    let colunas: Vec<Coluna> = match serde_json::from_str(&data_str) {
-        Ok(data) => data,
-        Err(error) => return Err(StatusMessage::SerdeError(error.to_string())),
-    };
+pub fn update_field(
+    table_name: String,
+    colunas: Vec<Coluna>,
+) -> Result<StatusMessage, StatusMessage> {
     use rusqlite::{Connection, NO_PARAMS};
+    use std::convert::TryFrom;
     if (!colunas.is_empty()) && (colunas.len() > 1) {
         match Connection::open("database.sqlite3") {
             Ok(conn) => {
@@ -24,7 +23,7 @@ pub fn update_field(table_name: String, data_str: String) -> Result<StatusMessag
                                 Err(_) => return Err(StatusMessage::MalformedId),
                             };
                         }
-                        _ => return Err(StatusMessage::InvalidInput(data_str)),
+                        _ => return Err(StatusMessage::InvalidInput("data_str".to_string())),
                     }
                 } else {
                     return Err(StatusMessage::MissingId);
@@ -59,6 +58,6 @@ pub fn update_field(table_name: String, data_str: String) -> Result<StatusMessag
             }
         }
     } else {
-        Err(StatusMessage::InvalidInput(data_str))
+        Err(StatusMessage::InvalidInput("data_str".to_string()))
     }
 }

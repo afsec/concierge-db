@@ -1,10 +1,10 @@
-use crate::api::{Response, StatusMessage};
+use crate::api::{BodyResponse, StatusMessage};
+use http_types::StatusCode;
+use tide::Response;
 
-pub fn update_field(message: StatusMessage) -> String {
-    let response = Response { status: message };
-
-    match serde_json::to_string::<Response>(&response) {
-        Ok(res) => res,
-        Err(err) => err.to_string(),
-    }
+pub fn update_field(message: StatusMessage) -> Response {
+    let body_response = BodyResponse { status: message };
+    Response::new(StatusCode::Ok)
+        .body_json(&body_response)
+        .unwrap()
 }

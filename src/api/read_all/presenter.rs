@@ -6,7 +6,7 @@ use super::view;
 pub async fn handler(request: Request<()>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::StatusCode;
-    // Authorization:
+    // Authentication:
     if is_authenticated(&request) {
         match request.param("table") {
             Ok(table) => match model::read_all(table) {

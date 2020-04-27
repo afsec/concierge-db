@@ -7,10 +7,11 @@ use crate::api::Coluna;
 pub async fn handler(mut request: Request<()>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::StatusCode;
+
     // Authentication:
     if is_authenticated(&request) {
-        // Get url param
 
+        // Get url param
         let table: String = match request.param("table") {
             Ok(table) => table,
             Err(error) => {
@@ -20,6 +21,8 @@ pub async fn handler(mut request: Request<()>) -> tide::Result {
                 ))
             }
         };
+
+        // Get body content
         let colunas: Vec<Coluna> = match request.body_json().await {
             Ok(data) => data,
             Err(error) => {
@@ -29,8 +32,10 @@ pub async fn handler(mut request: Request<()>) -> tide::Result {
                 ))
             }
         };
+        // Model
         match model::insert_row(table, colunas) {
             Ok(model) => {
+                // View
                 let view = view::insert_row(model);
                 Ok(view)
             }
