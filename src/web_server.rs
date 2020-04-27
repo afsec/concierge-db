@@ -17,8 +17,8 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
         app.at("/api/:table/count-rows")
             .get(crate::api::read_count::presenter::handler);
 
-        // app.at("/auth")
-        //     .post(crate::api::show_columns::presenter::show_columns);
+        app.at("/api/:table/show-columns")
+            .get(crate::api::show_columns::presenter::handler);
         // app.at("/auth")
         //     .post(crate::api::read_all::presenter::read_all);
         // app.at("/auth")

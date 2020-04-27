@@ -1,6 +1,7 @@
 use rusqlite::{Connection, NO_PARAMS};
 
 pub fn read_count(table: String) -> Result<u16, String> {
+    //TODO: Validate input using regex ([a-z] || [A-Z] || [0-9] || [_] && ! ^[0-9])
     const DATABASE_FILE: &str = "database.sqlite3";
     let conn = Connection::open(DATABASE_FILE).unwrap();
     let query = format!("SELECT COUNT(*) FROM {};", table);

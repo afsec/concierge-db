@@ -1,10 +1,10 @@
 // pub mod insert_row;
 // pub mod update_field;
 // pub mod read_all;
-// pub mod show_columns;
 
-pub mod show_tables;
 pub mod read_count;
+pub mod show_columns;
+pub mod show_tables;
 
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +19,7 @@ pub enum StatusMessage {
     InvalidInput(String),
     MissingId,
     MalformedId,
-    NotImplemented
+    NotImplemented,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
