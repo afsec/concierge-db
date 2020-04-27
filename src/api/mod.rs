@@ -1,7 +1,7 @@
 // pub mod insert_row;
 // pub mod update_field;
-// pub mod read_all;
 
+pub mod read_all;
 pub mod read_count;
 pub mod show_columns;
 pub mod show_tables;

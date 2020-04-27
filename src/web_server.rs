@@ -16,11 +16,10 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
             .get(crate::api::show_tables::presenter::handler);
         app.at("/api/:table/count-rows")
             .get(crate::api::read_count::presenter::handler);
-
         app.at("/api/:table/show-columns")
             .get(crate::api::show_columns::presenter::handler);
-        // app.at("/auth")
-        //     .post(crate::api::read_all::presenter::read_all);
+        app.at("/api/:table/read-all")
+            .get(crate::api::read_all::presenter::handler);
         // app.at("/auth")
         //     .post(crate::api::insert_row::presenter::insert_row);
         // app.at("/auth")
@@ -33,8 +32,6 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
         std::process::exit(0);
     })
 }
-
-
 
 pub async fn main_index(request: Request<()>) -> tide::Result {
     use crate::auth::is_authenticated;
@@ -67,7 +64,6 @@ pub async fn check_auth(request: Request<()>) -> tide::Result {
         ))
     }
 }
-
 
 // #[catch(404)]
 // pub fn error_404() -> content::Html<&'static str> {
