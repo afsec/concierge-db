@@ -12,7 +12,7 @@ run:
 
 deploy:
 	docker build -t afsec/concierge-db .
-	docker run --name concierge-db -d -p 8081:8081 afsec/concierge-db
+	docker run --name concierge-db -d -p 3341:3341 afsec/concierge-db
 	docker logs -f concierge-db
 
 clean:
