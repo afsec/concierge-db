@@ -25,6 +25,7 @@ fn get_token(request: &Request<()>) -> Option<String> {
 
 
 pub fn is_valid_token(token: String) -> bool {
+    // TODO: Implement Envvar -> `auth.toml`
     if token == "9admin9" {
         eprintln!("Authenticated: CLIENT_TOKEN: {:?}", token);
         true
