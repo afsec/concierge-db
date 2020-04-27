@@ -2,14 +2,13 @@ use crate::api::{Coluna, ColunaData};
 
 use crate::api::StatusMessage;
 
-pub fn insert_row(table_name: String, data_str: String) -> Result<StatusMessage, StatusMessage> {
-    let colunas: Vec<Coluna> = match serde_json::from_str(&data_str) {
-        Ok(data) => data,
-        Err(error) => return Err(StatusMessage::SerdeError(error.to_string()))
-    };
+pub fn insert_row(
+    table_name: String,
+    colunas: Vec<Coluna>,
+) -> Result<StatusMessage, StatusMessage> {
     use rusqlite::{Connection, NO_PARAMS};
     if colunas.is_empty() {
-        Err(StatusMessage::InvalidInput(data_str))
+        Err(StatusMessage::InvalidInput("data_str".to_string()))
     } else {
         match Connection::open("database.sqlite3") {
             Ok(conn) => {

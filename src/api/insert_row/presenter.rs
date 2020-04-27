@@ -1,27 +1,45 @@
-use rocket::post;
+use tide::{Request, Response};
 
-use rocket::response::{content, status};
-use rocket::Data;
+use super::model;
+use super::view;
+use crate::api::Coluna;
 
-use super::{model, view};
-use crate::api::converters;
+pub async fn handler(mut request: Request<()>) -> tide::Result {
+    use crate::auth::is_authenticated;
+    use http_types::StatusCode;
+    // Authentication:
+    if is_authenticated(&request) {
+        // Get url param
 
-#[post("/api/<tablename>/insert-one", format = "json", data = "<data>")]
-pub fn insert_row(
-    tablename: String,
-    data: Data,
-) -> Result<content::Json<String>, status::BadRequest<String>> {
-    let data_str = converters::data_to_string(data);
-    match model::insert_row(tablename, data_str) {
-        Ok(status) => {
-            let view = view::insert_row(status);
-            Ok(content::Json(view))
+        let table: String = match request.param("table") {
+            Ok(table) => table,
+            Err(error) => {
+                return Err(http_types::Error::from_str(
+                    StatusCode::BadRequest,
+                    format!("Invalid parameter -> Err({})", error),
+                ))
+            }
+        };
+        let colunas: Vec<Coluna> = match request.body_json().await {
+            Ok(data) => data,
+            Err(error) => {
+                return Err(http_types::Error::from_str(
+                    StatusCode::BadRequest,
+                    format!("Invalid body -> Err({})", error),
+                ))
+            }
+        };
+        match model::insert_row(table, colunas) {
+            Ok(model) => {
+                let view = view::insert_row(model);
+                Ok(view)
+            }
+            Err(error) => Ok(Response::new(StatusCode::Ok).body_json(&error).unwrap()),
         }
-        Err(status) => {
-            let view = view::insert_row(status);
-            Err(status::BadRequest(Some(view)))
-        }
+    } else {
+        Err(http_types::Error::from_str(
+            StatusCode::Unauthorized,
+            "Access Denied",
+        ))
     }
-    // let view = view::insert_row(&model);
-    // Ok(content::Json(view))
 }

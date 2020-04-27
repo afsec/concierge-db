@@ -20,8 +20,8 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
             .get(crate::api::show_columns::presenter::handler);
         app.at("/api/:table/read-all")
             .get(crate::api::read_all::presenter::handler);
-        // app.at("/auth")
-        //     .post(crate::api::insert_row::presenter::insert_row);
+        app.at("/api/:table/insert-one")
+            .post(crate::api::insert_row::presenter::handler);
         // app.at("/auth")
         //     .post(crate::api::update_field::presenter::update_field);
 
