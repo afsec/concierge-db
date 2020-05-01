@@ -1,11 +1,13 @@
+use rusqlite::{Result, NO_PARAMS};
+
 use crate::api::Coluna;
 use crate::api::ColunaData;
-use rusqlite::{Connection, Result, NO_PARAMS};
+use crate::database::DbConnection;
 
-pub fn read_all(table: String) -> Result<Vec<Vec<Coluna>>> {
-    const DATABASE_FILE: &str = "database.sqlite3";
-    let conn = Connection::open(DATABASE_FILE).unwrap();
+
+pub fn read_all(conn: DbConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
     let query = format!("SELECT * FROM {};", table);
+    println!("{}", &query);
     let mut stmt = conn.prepare(&query)?;
 
     let rows = stmt.query_map(NO_PARAMS, |row| {

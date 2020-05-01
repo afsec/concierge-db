@@ -20,7 +20,7 @@ fn main() {
 
 
     // Run Tide server
-    web_server::run(bind);
+    web_server::run(bind).unwrap();
 }
 
 

@@ -1,15 +1,30 @@
 use tide::Request;
 
+use crate::web_server::State;
+
 use super::model;
 use super::view;
 
-pub async fn handler(request: Request<()>) -> tide::Result {
+pub async fn handler(request: Request<State>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::StatusCode;
     // Authentication:
     if is_authenticated(&request) {
-        match model::show_tables() {
+        // Get database connection
+        let db_connection = match request.state().db_conn.get() {
+            Ok(conn) => conn,
+            Err(error) => {
+                return Err(http_types::Error::from_str(
+                    StatusCode::InternalServerError,
+                    format!("Database connection error: {}", error.to_string()),
+                ))
+            }
+        };
+
+        // Model
+        match model::show_tables(db_connection) {
             Ok(model) => {
+                // View
                 let view = view::show_tables(model);
                 Ok(view)
             }

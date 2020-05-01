@@ -21,6 +21,14 @@ pub enum StatusMessage {
     NotImplemented,
 }
 
+impl std::fmt::Display for StatusMessage {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+        // or, alternatively:
+        // fmt::Debug::fmt(self, f)
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BodyResponse {
     pub status: StatusMessage,

@@ -1,13 +1,14 @@
 use tide::Request;
+use crate::web_server::State;
 
-pub fn is_authenticated(request: &Request<()>) -> bool {
+pub fn is_authenticated(request: &Request<State>) -> bool {
     match get_token(&request) {
         Some(token) => is_valid_token(token),
         None => false,
     }
 }
 
-fn get_token(request: &Request<()>) -> Option<String> {
+fn get_token(request: &Request<State>) -> Option<String> {
     match request.header(&"Authorization".parse().unwrap()) {
         Some(vec) => match vec.first() {
             Some(header_value) => {

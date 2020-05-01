@@ -1,11 +1,12 @@
+use rusqlite::{Result, NO_PARAMS};
+
+use crate::database::DbConnection;
+
 use super::ColumnInfo;
 
-use rusqlite::{Connection, Result, NO_PARAMS};
-
-pub fn show_columns(table: String) -> Result<Vec<ColumnInfo>> {
-    const DATABASE_FILE: &str = "database.sqlite3";
-    let conn = Connection::open(DATABASE_FILE).unwrap();
+pub fn show_columns(conn: DbConnection, table: String) -> Result<Vec<ColumnInfo>> {
     let query = format!("PRAGMA table_info('{}')", table);
+    println!("{}", &query);
     let mut stmt = conn.prepare(&query)?;
     let rows = stmt.query_map(NO_PARAMS, |row| {
         Ok(ColumnInfo {

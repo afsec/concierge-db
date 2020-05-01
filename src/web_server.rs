@@ -1,25 +1,43 @@
 use tide::{Request, Response};
 
-pub fn run(bind: String) -> Result<(), std::io::Error> {
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-    const PROGRAM_NAME: &str = env!("CARGO_PKG_NAME");
+use crate::database::Pool;
 
+#[derive(Debug)]
+pub struct State {
+    pub db_conn: Pool,
+}
+
+pub fn run(bind: String) -> Result<(), std::io::Error> {
+    use crate::database;
     use async_std::task;
     use tide::Server;
 
+    const VERSION: &str = env!("CARGO_PKG_VERSION");
+    const PROGRAM_NAME: &str = env!("CARGO_PKG_NAME");
+
+    let conn = match database::connection() {
+        Ok(conn) => conn,
+        Err(error) => {
+            eprintln!("{}", error);
+            std::process::exit(1);
+        }
+    };
+
+    database::bootstrap(&conn);
+
     task::block_on(async {
-        // let mut app = Server::with_state();
-        let mut app = Server::new();
+        let mut app = Server::with_state(State { db_conn: conn });
+        // let mut app = Server::new();
         app.at("/").get(main_index);
         app.at("/auth").get(check_auth);
         app.at("/api/show-tables")
             .get(crate::api::show_tables::presenter::handler);
+        app.at("/api/:table/read-all")
+            .get(crate::api::read_all::presenter::handler);
         app.at("/api/:table/count-rows")
             .get(crate::api::read_count::presenter::handler);
         app.at("/api/:table/show-columns")
             .get(crate::api::show_columns::presenter::handler);
-        app.at("/api/:table/read-all")
-            .get(crate::api::read_all::presenter::handler);
         app.at("/api/:table/insert-one")
             .post(crate::api::insert_row::presenter::handler);
         app.at("/api/:table/update-field")
@@ -33,7 +51,7 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
     })
 }
 
-pub async fn main_index(request: Request<()>) -> tide::Result {
+pub async fn main_index(request: Request<State>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::{headers::CONTENT_TYPE, StatusCode};
     use mime::TEXT_HTML_UTF_8;
@@ -52,7 +70,7 @@ pub async fn main_index(request: Request<()>) -> tide::Result {
     }
 }
 
-pub async fn check_auth(request: Request<()>) -> tide::Result {
+pub async fn check_auth(request: Request<State>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::StatusCode;
     if is_authenticated(&request) {

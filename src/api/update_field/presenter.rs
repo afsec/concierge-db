@@ -1,10 +1,12 @@
 use tide::{Request, Response};
 
+use crate::api::Coluna;
+use crate::web_server::State;
+
 use super::model;
 use super::view;
-use crate::api::Coluna;
 
-pub async fn handler(mut request: Request<()>) -> tide::Result {
+pub async fn handler(mut request: Request<State>) -> tide::Result {
     use crate::auth::is_authenticated;
     use http_types::StatusCode;
 
@@ -31,8 +33,20 @@ pub async fn handler(mut request: Request<()>) -> tide::Result {
                 ))
             }
         };
+
+        // Get database connection
+        let db_connection = match request.state().db_conn.get() {
+            Ok(conn) => conn,
+            Err(error) => {
+                return Err(http_types::Error::from_str(
+                    StatusCode::InternalServerError,
+                    format!("Database connection error: {}", error.to_string()),
+                ))
+            }
+        };
+
         // Model
-        match model::update_field(table, colunas) {
+        match model::update_field(db_connection, table, colunas) {
             Ok(model) => {
                 // View
                 let view = view::update_field(model);
