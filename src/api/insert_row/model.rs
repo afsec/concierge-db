@@ -39,7 +39,7 @@ pub fn insert_row(
         println!("{}", &query);
         match conn.execute(query.as_ref(), NO_PARAMS) {
             Ok(_) => Ok(StatusMessage::Saved),
-            Err(error) => Err(StatusMessage::DatabaseError(error.to_string())),
+            Err(lib_error) => Err(StatusMessage::DatabaseError(lib_error.to_string())),
         }
     }
 }

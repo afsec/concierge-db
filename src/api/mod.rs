@@ -1,4 +1,5 @@
 pub mod insert_row;
+pub mod maintenance_mode;
 pub mod read_all;
 pub mod read_count;
 pub mod show_columns;
@@ -19,14 +20,7 @@ pub enum StatusMessage {
     MissingId,
     MalformedId,
     NotImplemented,
-}
-
-impl std::fmt::Display for StatusMessage {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-        // or, alternatively:
-        // fmt::Debug::fmt(self, f)
-    }
+    UnderMaintenance,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

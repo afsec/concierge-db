@@ -1,5 +1,3 @@
 mod model;
-mod view;
-
 pub mod presenter;
-
+mod view;

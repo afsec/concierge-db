@@ -4,7 +4,7 @@ mod api;
 mod auth;
 mod database;
 mod web_server;
-
+mod in_memory_db;
 fn main() {
     use clap::{crate_authors, crate_description, crate_name, crate_version, App};
 
@@ -18,9 +18,8 @@ fn main() {
     let listen_port = "3341";
     let bind = format!("{}:{}", listen_addr, listen_port);
 
+    println!("{} v{}", crate_name!(), crate_version!());
 
     // Run Tide server
     web_server::run(bind).unwrap();
 }
-
-

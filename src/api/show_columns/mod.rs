@@ -1,4 +1,4 @@
-pub mod model;
+mod model;
 pub mod presenter;
 mod view;
 
@@ -8,5 +8,5 @@ use serde::Serialize;
 
 pub struct ColumnInfo {
     pub column_name: String,
-    pub column_type: String
+    pub column_type: String,
 }

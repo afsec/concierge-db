@@ -1,12 +1,6 @@
 use tide::Request;
-use crate::web_server::State;
 
-pub fn is_authenticated(request: &Request<State>) -> bool {
-    match get_token(&request) {
-        Some(token) => is_valid_token(token),
-        None => false,
-    }
-}
+use crate::in_memory_db::{MaintenanceMode, State};
 
 fn get_token(request: &Request<State>) -> Option<String> {
     match request.header(&"Authorization".parse().unwrap()) {
@@ -15,18 +9,18 @@ fn get_token(request: &Request<State>) -> Option<String> {
                 let header_value = header_value.to_string();
                 match header_value.split_whitespace().last() {
                     Some(token) => Some(token.to_string()),
-                    None => None
+                    None => None,
                 }
-            },
+            }
             None => None,
         },
         None => None,
     }
 }
 
-
-pub fn is_valid_token(token: String) -> bool {
+fn is_valid_token(token: String) -> bool {
     // TODO: Implement Envvar -> `auth.toml`
+    // TODO: Add more info (Request IP Address)
     if token == "9admin9" {
         eprintln!("Authenticated: CLIENT_TOKEN: {:?}", token);
         true
@@ -34,4 +28,16 @@ pub fn is_valid_token(token: String) -> bool {
         eprintln!("ACCESS DENIED: CLIENT_TOKEN: {:?}", token);
         false
     }
+}
+
+pub fn is_authenticated(request: &Request<State>) -> bool {
+    dbg!(request);
+    match get_token(&request) {
+        Some(token) => is_valid_token(token),
+        None => false,
+    }
+}
+
+pub fn is_in_maintenance_mode(request: &Request<State>) -> bool {
+    MaintenanceMode::get_mode(&request.state())
 }

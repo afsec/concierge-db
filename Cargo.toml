@@ -12,6 +12,7 @@ mime = '0.3.16'
 
 r2d2 = '0.8.8'
 r2d2_sqlite = '0.15.0'
+
 [dependencies.rusqlite]
 features = ['bundled']
 version = '0.22.0'

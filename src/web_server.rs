@@ -1,19 +1,16 @@
 use tide::{Request, Response};
 
-use crate::database::Pool;
+use crate::in_memory_db::State;
 
-#[derive(Debug)]
-pub struct State {
-    pub db_conn: Pool,
-}
+// #[derive(Debug)]
+// pub struct State {
+//     pub db_conn: Pool,
+// }
 
 pub fn run(bind: String) -> Result<(), std::io::Error> {
     use crate::database;
     use async_std::task;
     use tide::Server;
-
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-    const PROGRAM_NAME: &str = env!("CARGO_PKG_NAME");
 
     let conn = match database::connection() {
         Ok(conn) => conn,
@@ -26,10 +23,11 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
     database::bootstrap(&conn);
 
     task::block_on(async {
-        let mut app = Server::with_state(State { db_conn: conn });
-        // let mut app = Server::new();
+        let mut app = Server::with_state(State::new(conn));
         app.at("/").get(main_index);
         app.at("/auth").get(check_auth);
+        app.at("/api/maintenance")
+            .patch(crate::api::maintenance_mode::presenter::handler);
         app.at("/api/show-tables")
             .get(crate::api::show_tables::presenter::handler);
         app.at("/api/:table/read-all")
@@ -43,7 +41,6 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
         app.at("/api/:table/update-field")
             .patch(crate::api::update_field::presenter::handler);
 
-        println!("{} v{}", PROGRAM_NAME, VERSION);
         println!("Listening at: http://{}", bind);
 
         app.listen(bind).await?;
