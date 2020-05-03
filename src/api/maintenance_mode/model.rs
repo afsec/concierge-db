@@ -1,7 +1,7 @@
 use tide::Request;
 
 use crate::api::StatusMessage;
-use crate::in_memory_db::MaintenanceMode;
+use crate::maintenance::MaintenanceMode;
 use crate::in_memory_db::State;
 
 pub fn maintenance_mode(

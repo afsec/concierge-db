@@ -51,7 +51,6 @@ pub async fn handler(mut request: Request<State>) -> tide::Result {
             match model::update_field(db_connection, table, colunas) {
                 Ok(model) => {
                     // View
-                    crate::in_memory_db::MaintenanceMode::set_on(&request.state());
                     let view = view::update_field(model);
                     Ok(view)
                 }

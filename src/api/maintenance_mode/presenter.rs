@@ -14,8 +14,8 @@ struct Maintenance {
 }
 
 pub async fn handler(mut request: Request<State>) -> tide::Result {
-    // Check Maintenance Mode
-    // TODO: Just do If source IP is 127.0.0.1
+    // TODO: dbg!(&request.peer_addr());
+    // TODO: Run only if source IP is 127.0.0.1
     // Authentication:
     if is_authenticated(&request) {
         let maintenance: Maintenance = match request.body_json().await {

@@ -3,8 +3,10 @@
 mod api;
 mod auth;
 mod database;
-mod web_server;
 mod in_memory_db;
+mod maintenance;
+mod web_server;
+
 fn main() {
     use clap::{crate_authors, crate_description, crate_name, crate_version, App};
 

@@ -1,6 +1,7 @@
 use tide::Request;
 
-use crate::in_memory_db::{MaintenanceMode, State};
+use crate::in_memory_db::State;
+use crate::maintenance::MaintenanceMode;
 
 fn get_token(request: &Request<State>) -> Option<String> {
     match request.header(&"Authorization".parse().unwrap()) {
