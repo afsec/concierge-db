@@ -5,8 +5,8 @@ authors = ['Antonio Feitosa <antonio.cfc@gmail.com>']
 edition = '2018'
 
 [dependencies]
-clap = '2.33.0'
-tide = '0.8.0'
+clap = '2.33.1'
+tide = '0.8.1'
 http-types = '1.2.0'
 mime = '0.3.16'
 
@@ -19,7 +19,7 @@ version = '0.22.0'
 
 [dependencies.serde]
 features = ['derive']
-version = '1.0.106'
+version = '1.0.110'
 
 [dependencies.async-std]
 version = '1.5.0'
