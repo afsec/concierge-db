@@ -2,7 +2,7 @@
 
 Just serve a SQLite database through HTTP Rest API
 
-## Lean artifact (~2 MB)
+## Lean artifact (~4 MB)
 The whole microservice is compiled as statically compiled via MUSL target.
 ```
 $ ls -lh
