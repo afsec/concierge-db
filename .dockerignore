@@ -1,1 +1,11 @@
-/target
+Cargo.lock
+Cargo.toml
+Dockerfile
+html
+Insomnia.json
+LICENSE
+Makefile
+README.md
+scripts
+src
+target
