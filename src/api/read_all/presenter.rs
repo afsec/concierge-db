@@ -1,5 +1,5 @@
 use http_types::StatusCode;
-use tide::{Request,Response};
+use tide::{Request, Response};
 
 use crate::api::{BodyResponse, StatusMessage};
 use crate::auth::{is_authenticated, is_in_maintenance_mode};
@@ -16,10 +16,12 @@ pub async fn handler(request: Request<State>) -> tide::Result {
             let db_connection = match request.state().db_conn.get() {
                 Ok(conn) => conn,
                 Err(error) => {
+                    let error_string = format!("Database connection error: {}", error.to_string());
+                    log::error!("{}", &error_string);
                     return Err(http_types::Error::from_str(
                         StatusCode::InternalServerError,
-                        format!("Database connection error: {}", error.to_string()),
-                    ))
+                        error_string,
+                    ));
                 }
             };
             match request.param("table") {
@@ -28,15 +30,23 @@ pub async fn handler(request: Request<State>) -> tide::Result {
                         let view = view::read_all(model);
                         Ok(view)
                     }
-                    Err(error) => Err(http_types::Error::from_str(
-                        StatusCode::InternalServerError,
-                        format!("model::show_tables -> Err({})", error),
-                    )),
+                    Err(error) => {
+                        let error_string = format!("model::show_tables -> Err({})", error);
+                        log::error!("{}", &error_string);
+                        Err(http_types::Error::from_str(
+                            StatusCode::InternalServerError,
+                            error_string,
+                        ))
+                    }
                 },
-                Err(error) => Err(http_types::Error::from_str(
-                    StatusCode::BadRequest,
-                    format!("Invalid parameter -> Err({})", error),
-                )),
+                Err(error) => {
+                    let error_string = format!("Invalid parameter -> Err({})", error);
+                    log::error!("{}", &error_string);
+                    Err(http_types::Error::from_str(
+                        StatusCode::BadRequest,
+                        error_string,
+                    ))
+                }
             }
         } else {
             Err(http_types::Error::from_str(

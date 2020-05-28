@@ -41,7 +41,7 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
         app.at("/api/:table/update-field")
             .patch(crate::api::update_field::presenter::handler);
 
-        println!("Listening at: http://{}", bind);
+        println!("Listening on: http://{}", bind);
 
         app.listen(bind).await?;
         std::process::exit(0);
@@ -50,14 +50,14 @@ pub fn run(bind: String) -> Result<(), std::io::Error> {
 
 pub async fn main_index(request: Request<State>) -> tide::Result {
     use crate::auth::is_authenticated;
-    use http_types::{headers::CONTENT_TYPE, StatusCode};
+    use http_types::StatusCode;
     use mime::TEXT_HTML_UTF_8;
 
     // Authentication
     if is_authenticated(&request) {
         let response = Response::new(StatusCode::Ok)
             .body_string(include_str!("./../html/home.html").to_string())
-            .set_header(CONTENT_TYPE, TEXT_HTML_UTF_8);
+            .set_mime(TEXT_HTML_UTF_8);
         Ok(response)
     } else {
         Err(http_types::Error::from_str(

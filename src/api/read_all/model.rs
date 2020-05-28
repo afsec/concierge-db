@@ -4,10 +4,9 @@ use crate::api::Coluna;
 use crate::api::ColunaData;
 use crate::database::DbConnection;
 
-
 pub fn read_all(conn: DbConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
     let query = format!("SELECT * FROM {};", table);
-    println!("{}", &query);
+    log::info!("SQL_QUERY: {}", &query);
     let mut stmt = conn.prepare(&query)?;
 
     let rows = stmt.query_map(NO_PARAMS, |row| {
@@ -90,10 +89,10 @@ pub fn read_all(conn: DbConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
                 }
                 _ => {
                     // Outros tipos: REAL, NULL, BLOB
-                    dbg!("TypeName unknown");
-                    dbg!(column[idx].decl_type());
+                    log::error!("TypeName unknown");
+                    log::error!("{:?}", column[idx].decl_type());
                     let data: String = row.get(idx).unwrap();
-                    dbg!(&data);
+                    log::debug!("{}", &data);
                     colunas.push(Coluna {
                         column_name: column[idx].name().to_string(),
                         data: ColunaData::Unknown(data),

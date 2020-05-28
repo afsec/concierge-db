@@ -2,6 +2,7 @@ pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
 pub type DbConnection = r2d2::PooledConnection<r2d2_sqlite::SqliteConnectionManager>;
 
 pub fn connection() -> Result<Pool, String> {
+    // TODO: Use env var to define file location
     const DB_FILE: &str = "database.sqlite3";
     const MAX_THREADS: u32 = 1;
 
@@ -19,7 +20,5 @@ pub fn bootstrap(pool: &r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>) {
 
     conn.execute_batch("PRAGMA journal_mode=WAL").unwrap();
     conn.execute_batch("PRAGMA foreign_keys=ON").unwrap();
-
-    // TODO: Check if PRAGMAs were applied
     assert!(conn.is_autocommit());
 }
