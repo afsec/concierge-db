@@ -1,7 +1,5 @@
 use tide::{Request, Response, StatusCode};
-// use smol::block_on as smol_block_on;
 
-// use crate::api::{BodyResponse, StatusMessage};
 use super::model;
 use super::view;
 use brickpack::global_state::State;
@@ -29,7 +27,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             return Response::new(StatusCode::InternalServerError);
         }
     };
-    // smol_block_on(async {
+
         // Model
         match model::show_tables(db_conn) {
             Ok(model) => {
@@ -43,5 +41,5 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
                 Response::new(StatusCode::InternalServerError)
             }
         }
-    // })
+
 }

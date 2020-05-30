@@ -2,11 +2,11 @@ use rusqlite::{Result, NO_PARAMS};
 
 use crate::api::Coluna;
 use crate::api::ColunaData;
-use crate::database::DbConnection;
+use crate::database::SqlitePooledConnection;
 
-pub fn read_all(conn: DbConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
+pub fn read_all(conn: SqlitePooledConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
     let query = format!("SELECT * FROM {};", table);
-    log::info!("SQL_QUERY: {}", &query);
+    tide::log::info!("SQL_QUERY: {}", &query);
     let mut stmt = conn.prepare(&query)?;
 
     let rows = stmt.query_map(NO_PARAMS, |row| {
@@ -89,10 +89,10 @@ pub fn read_all(conn: DbConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
                 }
                 _ => {
                     // Outros tipos: REAL, NULL, BLOB
-                    log::error!("TypeName unknown");
-                    log::error!("{:?}", column[idx].decl_type());
+                    tide::log::error!("TypeName unknown");
+                    tide::log::error!("{:?}", column[idx].decl_type());
                     let data: String = row.get(idx).unwrap();
-                    log::debug!("{}", &data);
+                    tide::log::debug!("{}", &data);
                     colunas.push(Coluna {
                         column_name: column[idx].name().to_string(),
                         data: ColunaData::Unknown(data),

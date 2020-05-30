@@ -1,65 +1,62 @@
-use http_types::StatusCode;
-use tide::{Request, Response};
+use brickpack::global_state::State;
+use tide::{Request, Response, StatusCode};
+use smol::block_on as smol_block_on;
 
-use crate::api::{BodyResponse, StatusMessage};
-use crate::auth::{is_authenticated, is_in_maintenance_mode};
-use crate::in_memory_db::State;
+use crate::api::Table;
 
 use super::model;
 use super::view;
 
-pub async fn handler(request: Request<State>) -> tide::Result {
-    // Check Maintenance Mode
-    if !is_in_maintenance_mode(&request) {
-        // Authentication:
-        if is_authenticated(&request) {
-            let db_connection = match request.state().db_conn.get() {
+pub fn handler(option_req: Option<Request<State>>) -> Response {
+    let mut request = match option_req {
+        Some(req) => req,
+        None => {
+            tide::log::error!("Request is None");
+            return Response::new(StatusCode::InternalServerError);
+        }
+    };
+    smol_block_on(async {
+        // Get Table from json body
+        let table_struct: Table = match request.body_json().await {
+            Ok(table_name) => table_name,
+            Err(error) => {
+                tide::log::error!("{}", error);
+                Table::default()
+            }
+        };
+
+        let table_name = match table_struct.name {
+            Some(value) => value,
+            None => {
+                tide::log::error!("Table name not defined");
+                return Response::new(StatusCode::BadRequest);
+            }
+        };
+
+        // Get SqlitePooledConnecton
+        let db_conn = match request.state().brickpack.get_db_connection() {
+            Some(pool) => match pool.get() {
                 Ok(conn) => conn,
                 Err(error) => {
-                    let error_string = format!("Database connection error: {}", error.to_string());
-                    log::error!("{}", &error_string);
-                    return Err(http_types::Error::from_str(
-                        StatusCode::InternalServerError,
-                        error_string,
-                    ));
+                    tide::log::error!("{}", error);
+                    return Response::new(StatusCode::InternalServerError);
                 }
-            };
-            match request.param("table") {
-                Ok(table) => match model::read_all(db_connection, table) {
-                    Ok(model) => {
-                        let view = view::read_all(model);
-                        Ok(view)
-                    }
-                    Err(error) => {
-                        let error_string = format!("model::show_tables -> Err({})", error);
-                        log::error!("{}", &error_string);
-                        Err(http_types::Error::from_str(
-                            StatusCode::InternalServerError,
-                            error_string,
-                        ))
-                    }
-                },
-                Err(error) => {
-                    let error_string = format!("Invalid parameter -> Err({})", error);
-                    log::error!("{}", &error_string);
-                    Err(http_types::Error::from_str(
-                        StatusCode::BadRequest,
-                        error_string,
-                    ))
-                }
+            },
+            None => {
+                tide::log::error!("Cannot get PooledConnection");
+                return Response::new(StatusCode::InternalServerError);
             }
-        } else {
-            Err(http_types::Error::from_str(
-                StatusCode::Unauthorized,
-                "Access Denied",
-            ))
-        }
-    } else {
-        let body_response = BodyResponse {
-            status: StatusMessage::UnderMaintenance,
         };
-        Ok(Response::new(StatusCode::ServiceUnavailable)
-            .body_json(&body_response)
-            .unwrap())
-    }
+    match model::read_all(db_conn, table_name) {
+            Ok(model) => {
+                let view = view::read_all(model);
+                view
+            }
+            Err(error) => {
+                let msg = format!("model::read_all -> Err({})", error);
+                tide::log::error!("{}", msg);
+                Response::new(StatusCode::InternalServerError)
+            }
+        }
+    })
 }

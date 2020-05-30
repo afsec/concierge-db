@@ -1,18 +1,17 @@
 use brickpack::global_state::State;
-use serde::Deserialize;
+
 use smol::block_on as smol_block_on;
 use tide::{Request, Response, StatusCode};
+
 // use crate::api::{BodyResponse, StatusMessage};
+use crate::api::Table;
 
 use super::model;
 use super::view;
 
 // TODO: Security Feature: Implement body max length, like Rocket.rs limits;
 
-#[derive(Deserialize, Debug, Default)]
-struct Table {
-    name: Option<String>,
-}
+
 
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
