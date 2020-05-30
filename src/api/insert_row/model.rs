@@ -2,15 +2,15 @@ use rusqlite::{Result, NO_PARAMS};
 
 use crate::api::StatusMessage;
 use crate::api::{Coluna, ColunaData};
-use crate::database::DbConnection;
+use crate::database::SqlitePooledConnection;
 
 pub fn insert_row(
-    conn: DbConnection,
+    conn: SqlitePooledConnection,
     table_name: String,
     colunas: Vec<Coluna>,
 ) -> Result<StatusMessage, StatusMessage> {
     if colunas.is_empty() {
-        Err(StatusMessage::InvalidInput("data_str".to_string()))
+        Err(StatusMessage::InvalidInput("Empty Input Row".to_string()))
     } else {
         let mut keys = String::new();
         let mut values = String::new();
