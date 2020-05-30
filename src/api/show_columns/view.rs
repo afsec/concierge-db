@@ -1,6 +1,4 @@
-use http_types::StatusCode;
-use tide::Response;
-
+use tide::{Response,StatusCode};
 use super::ColumnInfo;
 
 pub fn show_columns(columns: Vec<ColumnInfo>) -> Response {

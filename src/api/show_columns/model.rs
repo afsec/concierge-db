@@ -1,10 +1,10 @@
 use rusqlite::{Result, NO_PARAMS};
 
-use crate::database::DbConnection;
+use crate::database::SqlitePooledConnection;
 
 use super::ColumnInfo;
 
-pub fn show_columns(conn: DbConnection, table: String) -> Result<Vec<ColumnInfo>> {
+pub fn show_columns(conn: SqlitePooledConnection, table: String) -> Result<Vec<ColumnInfo>> {
     let query = format!("PRAGMA table_info('{}')", table);
     println!("{}", &query);
     let mut stmt = conn.prepare(&query)?;

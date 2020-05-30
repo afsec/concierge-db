@@ -25,7 +25,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             }
         };
 
-        let table_name = match table_struct.name {
+        let table_name = match table_struct.table {
             Some(value) => value,
             None => {
                 tide::log::error!("Table name not defined");

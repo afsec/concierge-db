@@ -1,8 +1,8 @@
 // pub mod insert_row;
 pub mod read_all;
 pub mod read_count;
+pub mod show_columns;
 pub mod show_tables;
-// pub mod show_columns;
 // pub mod update_field;
 
 use serde::{Deserialize, Serialize};
@@ -29,7 +29,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug, Default)]
 pub struct Table {
-    name: Option<String>,
+    table: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

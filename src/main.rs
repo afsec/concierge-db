@@ -2,7 +2,6 @@
 
 mod api;
 mod database;
-// mod web_server;
 
 use brickpack::App;
 use clap::{crate_authors, crate_description, crate_name, crate_version, App as ClapApp};
@@ -39,14 +38,10 @@ fn main() {
 
     // app.add_endpoint("show-users", crate::api::show_users::presenter::handler);
     // app.add_endpoint("show-posts", crate::api::show_posts::presenter::handler);
-    app.add_endpoint("show-tables", crate::api::show_tables::presenter::handler);
     app.add_endpoint("count-rows", crate::api::read_count::presenter::handler);
+    app.add_endpoint("show-tables", crate::api::show_tables::presenter::handler);
     app.add_endpoint("read-all", crate::api::read_all::presenter::handler);
-
-    // app.add_endpoint(
-    //     "/api/:table/show-columns",
-    //     crate::api::show_columns::presenter::handler,
-    // );
+    app.add_endpoint("show-columns", crate::api::show_columns::presenter::handler);
     // app.add_endpoint(
     //     "/api/:table/insert-one",
     //     crate::api::insert_row::presenter::handler,
