@@ -7,6 +7,7 @@ use crate::api::{Coluna, Table};
 use super::model;
 use super::view;
 
+// * Presenter
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
         Some(req) => req,
@@ -16,7 +17,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         }
     };
     smol_block_on(async {
-        // Get Table from json body
+        // * Get Table from json body
         let table_struct: Table = match request.body_json().await {
             Ok(table_name) => table_name,
             Err(error) => {
@@ -49,7 +50,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             }
         };
 
-        // Get SqlitePooledConnecton
+        // * Get SqlitePooledConnecton
         let db_conn = match request.state().brickpack.get_db_connection() {
             Some(pool) => match pool.get() {
                 Ok(conn) => conn,
@@ -64,8 +65,9 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             }
         };
 
-        // Model
+        // * Model
         let model = model::insert_row(db_conn, table_name, colunas);
+        // * View
         let view = view::insert_row(model);
         view
     })

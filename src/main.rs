@@ -40,11 +40,8 @@ fn main() {
     app.add_endpoint("show-tables", crate::api::show_tables::presenter::handler);
     app.add_endpoint("read-all", crate::api::read_all::presenter::handler);
     app.add_endpoint("show-columns", crate::api::show_columns::presenter::handler);
-    app.add_endpoint("insert-row",crate::api::insert_row::presenter::handler);
-    // app.add_endpoint(
-    //     "/api/:table/update-field",
-    //     crate::api::update_field::presenter::handler,
-    // );
+    app.add_endpoint("insert-row", crate::api::insert_row::presenter::handler);
+    app.add_endpoint("update-field", crate::api::update_field::presenter::handler);
 
     app.set_db_connection(db_conn);
 

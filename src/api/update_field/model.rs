@@ -3,10 +3,10 @@ use std::convert::TryFrom;
 
 use crate::api::StatusMessage;
 use crate::api::{Coluna, ColunaData};
-use crate::database::DbConnection;
+use crate::database::SqlitePooledConnection;
 
 pub fn update_field(
-    conn: DbConnection,
+    conn: SqlitePooledConnection,
     table_name: String,
     colunas: Vec<Coluna>,
 ) -> Result<StatusMessage, StatusMessage> {

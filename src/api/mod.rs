@@ -3,7 +3,7 @@ pub mod read_all;
 pub mod read_count;
 pub mod show_columns;
 pub mod show_tables;
-// pub mod update_field;
+pub mod update_field;
 
 use serde::{Deserialize, Serialize};
 
@@ -12,12 +12,13 @@ pub enum StatusMessage {
     InvalidInput(String),
     Saved,
     DatabaseError(String),
+    MissingId,
+    MalformedId,
+
     // NotSaved,
     // SerdeError(String),
     // ConnectionError(String),
     // NotProcessed(String),
-    // MissingId,
-    // MalformedId,
     // NotImplemented,
     // UnderMaintenance,
 }

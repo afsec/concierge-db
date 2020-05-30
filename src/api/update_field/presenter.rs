@@ -1,73 +1,74 @@
-use http_types::StatusCode;
-use tide::{Request, Response};
+use brickpack::global_state::State;
+use smol::block_on as smol_block_on;
+use tide::{Request, Response, StatusCode};
 
-use crate::api::Coluna;
-use crate::api::{BodyResponse, StatusMessage};
-use crate::auth::{is_authenticated, is_in_maintenance_mode};
-use crate::in_memory_db::State;
+use crate::api::{Coluna, Table};
 
 use super::model;
 use super::view;
 
-pub async fn handler(mut request: Request<State>) -> tide::Result {
-    // Check Maintenance Mode
-    if !is_in_maintenance_mode(&request) {
-        // Authentication:
-        if is_authenticated(&request) {
-            // Get url param
-            let table: String = match request.param("table") {
-                Ok(table) => table,
-                Err(error) => {
-                    return Err(http_types::Error::from_str(
-                        StatusCode::BadRequest,
-                        format!("Invalid parameter -> Err({})", error),
-                    ))
-                }
-            };
+// * Presenter
+pub fn handler(option_req: Option<Request<State>>) -> Response {
+    let mut request = match option_req {
+        Some(req) => req,
+        None => {
+            tide::log::error!("Request is None");
+            return Response::new(StatusCode::InternalServerError);
+        }
+    };
+    smol_block_on(async {
+        // Get Table from json body
+        let table_struct: Table = match request.body_json().await {
+            Ok(table_name) => table_name,
+            Err(error) => {
+                tide::log::error!("{}", error);
+                Table::default()
+            }
+        };
+        // // Get body content
+        // let colunas: Vec<Coluna> = match request.body_json().await {
+        //     Ok(data) => data,
+        //     Err(error) => {
+        //         tide::log::error!("Invalid Input");
+        //         return Response::new(StatusCode::BadRequest);
+        //     }
+        // };
 
-            // Get body content
-            let colunas: Vec<Coluna> = match request.body_json().await {
-                Ok(data) => data,
-                Err(error) => {
-                    return Err(http_types::Error::from_str(
-                        StatusCode::BadRequest,
-                        format!("Invalid body -> Err({})", error),
-                    ))
-                }
-            };
+        let table_name = match table_struct.table {
+            Some(value) => value,
+            None => {
+                tide::log::error!("Table name not defined");
+                return Response::new(StatusCode::BadRequest);
+            }
+        };
 
-            // Get database connection
-            let db_connection = match request.state().db_conn.get() {
+        let colunas: Vec<Coluna> = match table_struct.columns {
+            Some(vec) => vec,
+            None => {
+                tide::log::error!("No Columns defined");
+                Vec::new()
+            }
+        };
+
+        // Get SqlitePooledConnecton
+        let db_conn = match request.state().brickpack.get_db_connection() {
+            Some(pool) => match pool.get() {
                 Ok(conn) => conn,
                 Err(error) => {
-                    return Err(http_types::Error::from_str(
-                        StatusCode::InternalServerError,
-                        format!("Database connection error: {}", error.to_string()),
-                    ))
+                    tide::log::error!("{}", error);
+                    return Response::new(StatusCode::InternalServerError);
                 }
-            };
-
-            // Model
-            match model::update_field(db_connection, table, colunas) {
-                Ok(model) => {
-                    // View
-                    let view = view::update_field(model);
-                    Ok(view)
-                }
-                Err(error) => Ok(Response::new(StatusCode::Ok).body_json(&error).unwrap()),
+            },
+            None => {
+                tide::log::error!("Cannot get PooledConnection");
+                return Response::new(StatusCode::InternalServerError);
             }
-        } else {
-            Err(http_types::Error::from_str(
-                StatusCode::Unauthorized,
-                "Access Denied",
-            ))
-        }
-    } else {
-        let body_response = BodyResponse {
-            status: StatusMessage::UnderMaintenance,
         };
-        Ok(Response::new(StatusCode::ServiceUnavailable)
-            .body_json(&body_response)
-            .unwrap())
-    }
+
+        // * Model
+        let model = model::update_field(db_conn, table_name, colunas);
+        // * View
+        let view = view::update_field(model);
+        view
+    })
 }

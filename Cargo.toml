@@ -1,6 +1,6 @@
 [package]
 name = 'concierge-db'
-version = '0.4.4'
+version = '0.4.5'
 authors = ['Antonio Feitosa <antonio.cfc@gmail.com>']
 edition = '2018'
 
