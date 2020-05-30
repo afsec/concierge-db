@@ -1,8 +1,8 @@
 use rusqlite::{Result, NO_PARAMS};
 
-use crate::database::DbConnection;
+use crate::database::SqlitePooledConnection;
 
-pub fn show_tables(conn: DbConnection) -> Result<Vec<String>> {
+pub fn show_tables(conn: SqlitePooledConnection) -> Result<Vec<String>> {
     let query =
         r#"SELECT name FROM sqlite_master where type="table" AND name NOT LIKE "%sqlite%";"#;
     println!("{}", &query);

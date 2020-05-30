@@ -1,6 +1,5 @@
-use http_types::StatusCode;
 use serde::Serialize;
-use tide::Response;
+use tide::{Response,StatusCode};
 
 #[derive(Serialize, Debug)]
 struct ShowTables {

@@ -1,53 +1,47 @@
-use http_types::StatusCode;
-use tide::{Request, Response};
+use tide::{Request, Response, StatusCode};
+// use smol::block_on as smol_block_on;
 
-use crate::api::{BodyResponse, StatusMessage};
-use crate::auth::{is_authenticated, is_in_maintenance_mode};
-use crate::in_memory_db::State;
-
+// use crate::api::{BodyResponse, StatusMessage};
 use super::model;
 use super::view;
+use brickpack::global_state::State;
 
-pub async fn handler(request: Request<State>) -> tide::Result {
-    // Check Maintenance Mode
-    if !is_in_maintenance_mode(&request) {
-        // Authentication:
-        if is_authenticated(&request) {
-            // Get database connection
-            let db_connection = match request.state().db_conn.get() {
-                Ok(conn) => conn,
-                Err(error) => {
-                    return Err(http_types::Error::from_str(
-                        StatusCode::InternalServerError,
-                        format!("Database connection error: {}", error.to_string()),
-                    ))
-                }
-            };
-
-            // Model
-            match model::show_tables(db_connection) {
-                Ok(model) => {
-                    // View
-                    let view = view::show_tables(model);
-                    Ok(view)
-                }
-                Err(error) => Err(http_types::Error::from_str(
-                    StatusCode::InternalServerError,
-                    format!("model::show_tables -> Err({})", error),
-                )),
-            }
-        } else {
-            Err(http_types::Error::from_str(
-                StatusCode::Unauthorized,
-                "Access Denied",
-            ))
+pub fn handler(option_req: Option<Request<State>>) -> Response {
+    let request = match option_req {
+        Some(req) => req,
+        None => {
+            tide::log::error!("Request is None");
+            return Response::new(StatusCode::InternalServerError);
         }
-    } else {
-        let body_response = BodyResponse {
-            status: StatusMessage::UnderMaintenance,
-        };
-        Ok(Response::new(StatusCode::ServiceUnavailable)
-            .body_json(&body_response)
-            .unwrap())
-    }
+    };
+
+    // Get SqlitePooledConnecton
+    let db_conn = match request.state().brickpack.get_db_connection() {
+        Some(pool) => match pool.get() {
+            Ok(conn) => conn,
+            Err(error) => {
+                tide::log::error!("{}", error);
+                return Response::new(StatusCode::InternalServerError);
+            }
+        },
+        None => {
+            tide::log::error!("Cannot get PooledConnection");
+            return Response::new(StatusCode::InternalServerError);
+        }
+    };
+    // smol_block_on(async {
+        // Model
+        match model::show_tables(db_conn) {
+            Ok(model) => {
+                // View
+                let view = view::show_tables(model);
+                view
+            }
+            Err(error) => {
+                let msg = format!("model::show_tables -> Err({})", error);
+                tide::log::error!("{}", msg);
+                Response::new(StatusCode::InternalServerError)
+            }
+        }
+    // })
 }

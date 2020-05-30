@@ -39,10 +39,10 @@ fn main() {
 
     // app.add_endpoint("show-users", crate::api::show_users::presenter::handler);
     // app.add_endpoint("show-posts", crate::api::show_posts::presenter::handler);
-    // app.add_endpoint(
-    //     "/api/show-tables",
-    //     crate::api::show_tables::presenter::handler,
-    // );
+    app.add_endpoint(
+        "show-tables",
+        crate::api::show_tables::presenter::handler,
+    );
     // app.add_endpoint(
     //     "/api/:table/read-all",
     //     crate::api::read_all::presenter::handler,
