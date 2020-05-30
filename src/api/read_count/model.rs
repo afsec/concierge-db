@@ -1,8 +1,8 @@
 use rusqlite::{Result, NO_PARAMS};
 
-use crate::database::DbConnection;
+use crate::database::SqlitePooledConnection;
 
-pub fn read_count(conn: DbConnection, table: String) -> Result<u16, String> {
+pub fn read_count(conn: SqlitePooledConnection, table: String) -> Result<u16, String> {
     //TODO: Validate input using regex ([a-z] || [A-Z] || [0-9] || [_] && ! ^[0-9])
     let query = format!("SELECT COUNT(*) FROM {};", table);
     println!("{}", &query);

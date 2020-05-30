@@ -1,18 +1,15 @@
 [package]
 name = 'concierge-db'
-version = '0.3.0'
+version = '0.4.1'
 authors = ['Antonio Feitosa <antonio.cfc@gmail.com>']
 edition = '2018'
 
 [dependencies]
 clap = '2.33.1'
 tide = '0.9.0'
-http-types = '2.0.1'
-mime = '0.3.16'
 r2d2 = '0.8.8'
 r2d2_sqlite = '0.16.0'
-femme = "2.1.0"
-log = "0.4.8"
+smol = "0.1.10"
 
 [dependencies.rusqlite]
 features = ['bundled']
@@ -20,13 +17,9 @@ version = '0.23.1'
 
 [dependencies.serde]
 features = ['derive']
-version = '1.0.110'
+version = '1.0.111'
 
-[dependencies.async-std]
-version = '1.6.0'
-features = ['attributes']
-
-[dependencies.regex]
-version = '1.3.8'
-default-features = false
-features = ['std']
+[dependencies.brickpack]
+version = '0.7'
+git = 'https://github.com/afsec/brickpack.git'
+# path = '../brickpack/'
