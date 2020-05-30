@@ -3,7 +3,7 @@
 Just serve a SQLite database through HTTP Rest API powered by Brickpack (https://github.com/afsec/brickpack/)
 
 ## Lean artifact (~4 MB)
-The whole microservice is built with static compilation using **MUSL** target.
+The whole microservice is built with static compiling using **MUSL** target.
 
 ```
 $ ls -lh
