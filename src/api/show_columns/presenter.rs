@@ -28,10 +28,14 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         let table_name = match table_struct.table {
             Some(value) => value,
             None => {
-                tide::log::error!("Table name not defined");
-                return Response::new(StatusCode::BadRequest);
+                let msg = "Table name not defined".to_string();
+                tide::log::error!("{}", &msg);
+                let mut response = Response::new(StatusCode::BadRequest);
+                response.set_body(msg);
+                return response
             }
         };
+
         // Get SqlitePooledConnecton
         let db_conn = match request.state().brickpack.get_db_connection() {
             Some(pool) => match pool.get() {
