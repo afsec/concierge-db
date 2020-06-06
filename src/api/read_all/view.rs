@@ -1,8 +1,8 @@
-use tide::{Response,StatusCode};
 use crate::api::Coluna;
+use tide::{Body, Response, StatusCode};
 
 pub fn read_all(rows: Vec<Vec<Coluna>>) -> Response {
-    Response::new(StatusCode::Ok)
-        .body_json(&rows)
-        .unwrap()
+    let mut response = Response::new(StatusCode::Ok);
+    response.set_body(Body::from_json(&rows).unwrap());
+    response
 }

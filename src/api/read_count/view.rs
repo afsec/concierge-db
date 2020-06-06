@@ -1,5 +1,5 @@
 use serde::Serialize;
-use tide::{Response,StatusCode};
+use tide::{Body, Response, StatusCode};
 
 #[derive(Serialize, Debug)]
 struct RowCount {
@@ -8,7 +8,7 @@ struct RowCount {
 
 pub fn read_count(rows: u16) -> Response {
     let body_response = RowCount { rows };
-    Response::new(StatusCode::Ok)
-        .body_json(&body_response)
-        .unwrap()
+    let mut response = Response::new(StatusCode::Ok);
+    response.set_body(Body::from_json(&body_response).unwrap());
+    response
 }

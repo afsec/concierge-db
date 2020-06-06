@@ -1,15 +1,15 @@
 [package]
 name = 'concierge-db'
-version = '0.4.6'
+version = '0.4.7'
 authors = ['Antonio Feitosa <antonio.cfc@gmail.com>']
 edition = '2018'
 
 [dependencies]
 clap = '2.33.1'
-tide = '0.9.0'
+tide = '0.10.0'
 r2d2 = '0.8.8'
 r2d2_sqlite = '0.16.0'
-smol = "0.1.10"
+smol = "0.1.11"
 
 [dependencies.rusqlite]
 features = ['bundled']

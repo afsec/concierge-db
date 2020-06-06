@@ -1,5 +1,5 @@
 use serde::Serialize;
-use tide::{Response,StatusCode};
+use tide::{Body, Response, StatusCode};
 
 #[derive(Serialize, Debug)]
 struct ShowTables {
@@ -12,7 +12,7 @@ pub fn show_tables(rows: Vec<String>) -> Response {
     } else {
         ShowTables { tables: None }
     };
-    Response::new(StatusCode::Ok)
-        .body_json(&body_response)
-        .unwrap()
+    let mut response = Response::new(StatusCode::Ok);
+    response.set_body(Body::from_json(&body_response).unwrap());
+    response
 }

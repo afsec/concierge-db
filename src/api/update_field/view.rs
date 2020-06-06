@@ -1,4 +1,4 @@
-use tide::{Response, StatusCode};
+use tide::{Body, Response, StatusCode};
 
 use crate::api::{BodyResponse, StatusMessage};
 
@@ -6,15 +6,15 @@ pub fn update_field(model_result: Result<StatusMessage, StatusMessage>) -> Respo
     match model_result {
         Ok(message) => {
             let body_response = BodyResponse { status: message };
-            Response::new(StatusCode::Ok)
-                .body_json(&body_response)
-                .unwrap()
+            let mut response = Response::new(StatusCode::Ok);
+            response.set_body(Body::from_json(&body_response).unwrap());
+            response
         }
         Err(error) => {
             let body_response = BodyResponse { status: error };
-            Response::new(StatusCode::InternalServerError)
-                .body_json(&body_response)
-                .unwrap()
+            let mut response = Response::new(StatusCode::InternalServerError);
+            response.set_body(Body::from_json(&body_response).unwrap());
+            response
         }
     }
 }
