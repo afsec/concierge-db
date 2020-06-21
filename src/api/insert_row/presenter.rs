@@ -4,9 +4,6 @@ use brickpack::{Request, Response, StatusCode};
 
 use crate::api::{Coluna, Table};
 
-use super::model;
-use super::view;
-
 // * Presenter
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
@@ -69,9 +66,9 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         };
 
         // * Model
-        let model = model::insert_row(db_conn, table_name, colunas);
+        let model = super::model::insert_row(db_conn, table_name, colunas);
+
         // * View
-        let view = view::insert_row(model);
-        view
+        super::view::insert_row(model)
     })
 }

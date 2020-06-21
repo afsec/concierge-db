@@ -4,9 +4,6 @@ use smol::block_on as smol_block_on;
 
 use crate::api::Table;
 
-use super::model;
-use super::view;
-
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
         Some(req) => req,
@@ -32,7 +29,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
                 brickpack::log::error!("{}", &msg);
                 let mut response = Response::new(StatusCode::BadRequest);
                 response.set_body(msg);
-                return response
+                return response;
             }
         };
 
@@ -50,11 +47,8 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
                 return Response::new(StatusCode::InternalServerError);
             }
         };
-    match model::read_all(db_conn, table_name) {
-            Ok(model) => {
-                let view = view::read_all(model);
-                view
-            }
+        match super::model::read_all(db_conn, table_name) {
+            Ok(model) => super::view::read_all(model),
             Err(error) => {
                 let msg = format!("model::read_all -> Err({})", error);
                 brickpack::log::error!("{}", msg);

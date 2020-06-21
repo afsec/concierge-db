@@ -1,11 +1,8 @@
 use brickpack::global_state::State;
-use smol::block_on as smol_block_on;
 use brickpack::{Request, Response, StatusCode};
+use smol::block_on as smol_block_on;
 
 use crate::api::Table;
-
-use super::model;
-use super::view;
 
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
@@ -32,7 +29,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
                 brickpack::log::error!("{}", &msg);
                 let mut response = Response::new(StatusCode::BadRequest);
                 response.set_body(msg);
-                return response
+                return response;
             }
         };
 
@@ -52,11 +49,10 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         };
 
         // Model
-        match model::show_columns(db_conn, table_name) {
+        match super::model::show_columns(db_conn, table_name) {
             Ok(model) => {
                 // View
-                let view = view::show_columns(model);
-                view
+                super::view::show_columns(model)
             }
             Err(error) => {
                 let msg = format!("model::show_columns -> Err({})", error);

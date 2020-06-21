@@ -1,11 +1,8 @@
 use brickpack::global_state::State;
-use smol::block_on as smol_block_on;
 use brickpack::{Request, Response, StatusCode};
+use smol::block_on as smol_block_on;
 
 use crate::api::{Coluna, Table};
-
-use super::model;
-use super::view;
 
 // * Presenter
 pub fn handler(option_req: Option<Request<State>>) -> Response {
@@ -41,7 +38,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
                 brickpack::log::error!("{}", &msg);
                 let mut response = Response::new(StatusCode::BadRequest);
                 response.set_body(msg);
-                return response
+                return response;
             }
         };
 
@@ -69,9 +66,8 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         };
 
         // * Model
-        let model = model::update_field(db_conn, table_name, colunas);
+        let model = super::model::update_field(db_conn, table_name, colunas);
         // * View
-        let view = view::update_field(model);
-        view
+        super::view::update_field(model)
     })
 }

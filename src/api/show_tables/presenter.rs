@@ -1,8 +1,5 @@
-use brickpack::{Request, Response, StatusCode};
-
-use super::model;
-use super::view;
 use brickpack::global_state::State;
+use brickpack::{Request, Response, StatusCode};
 
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let request = match option_req {
@@ -28,18 +25,16 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         }
     };
 
-        // Model
-        match model::show_tables(db_conn) {
-            Ok(model) => {
-                // View
-                let view = view::show_tables(model);
-                view
-            }
-            Err(error) => {
-                let msg = format!("model::show_tables -> Err({})", error);
-                brickpack::log::error!("{}", msg);
-                Response::new(StatusCode::InternalServerError)
-            }
+    // Model
+    match super::model::show_tables(db_conn) {
+        Ok(model) => {
+            // View
+            super::view::show_tables(model)
         }
-
+        Err(error) => {
+            let msg = format!("model::show_tables -> Err({})", error);
+            brickpack::log::error!("{}", msg);
+            Response::new(StatusCode::InternalServerError)
+        }
+    }
 }

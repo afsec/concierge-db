@@ -1,16 +1,11 @@
 use brickpack::global_state::State;
 
-use smol::block_on as smol_block_on;
 use brickpack::{Request, Response, StatusCode};
+use smol::block_on as smol_block_on;
 
 use crate::api::Table;
 
-use super::model;
-use super::view;
-
 // TODO: Security Feature: Implement body max length, like Rocket.rs limits;
-
-
 
 pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
@@ -37,7 +32,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
                 brickpack::log::error!("{}", &msg);
                 let mut response = Response::new(StatusCode::BadRequest);
                 response.set_body(msg);
-                return response
+                return response;
             }
         };
 
@@ -56,11 +51,8 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             }
         };
 
-        match model::read_count(db_conn, table_name) {
-            Ok(model) => {
-                let view = view::read_count(model);
-                view
-            }
+        match super::model::read_count(db_conn, table_name) {
+            Ok(model) => super::view::read_count(model),
             Err(error) => {
                 let msg = format!("model::show_tables -> Err({})", error);
                 brickpack::log::error!("{}", msg);
