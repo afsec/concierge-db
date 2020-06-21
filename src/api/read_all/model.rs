@@ -6,7 +6,7 @@ use crate::database::SqlitePooledConnection;
 
 pub fn read_all(conn: SqlitePooledConnection, table: String) -> Result<Vec<Vec<Coluna>>> {
     let query = format!("SELECT * FROM {};", table);
-    tide::log::info!("SQL_QUERY: {}", &query);
+    brickpack::log::info!("SQL_QUERY: {}", &query);
     let mut stmt = conn.prepare(&query)?;
 
     let rows = stmt.query_map(NO_PARAMS, |row| {
@@ -89,10 +89,10 @@ pub fn read_all(conn: SqlitePooledConnection, table: String) -> Result<Vec<Vec<C
                 }
                 _ => {
                     // Outros tipos: REAL, NULL, BLOB
-                    tide::log::error!("TypeName unknown");
-                    tide::log::error!("{:?}", column[idx].decl_type());
+                    brickpack::log::error!("TypeName unknown");
+                    brickpack::log::error!("{:?}", column[idx].decl_type());
                     let data: String = row.get(idx).unwrap();
-                    tide::log::debug!("{}", &data);
+                    brickpack::log::debug!("{}", &data);
                     colunas.push(Coluna {
                         column_name: column[idx].name().to_string(),
                         data: ColunaData::Unknown(data),

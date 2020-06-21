@@ -1,7 +1,7 @@
 use brickpack::global_state::State;
 
 use smol::block_on as smol_block_on;
-use tide::{Request, Response, StatusCode};
+use brickpack::{Request, Response, StatusCode};
 
 use crate::api::Table;
 
@@ -16,7 +16,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
         Some(req) => req,
         None => {
-            tide::log::error!("Request is None");
+            brickpack::log::error!("Request is None");
             return Response::new(StatusCode::InternalServerError);
         }
     };
@@ -25,7 +25,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         let table_struct: Table = match request.body_json().await {
             Ok(table_name) => table_name,
             Err(error) => {
-                tide::log::error!("{}", error);
+                brickpack::log::error!("{}", error);
                 Table::default()
             }
         };
@@ -34,7 +34,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             Some(value) => value,
             None => {
                 let msg = "Table name not defined".to_string();
-                tide::log::error!("{}", &msg);
+                brickpack::log::error!("{}", &msg);
                 let mut response = Response::new(StatusCode::BadRequest);
                 response.set_body(msg);
                 return response
@@ -46,12 +46,12 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             Some(pool) => match pool.get() {
                 Ok(conn) => conn,
                 Err(error) => {
-                    tide::log::error!("{}", error);
+                    brickpack::log::error!("{}", error);
                     return Response::new(StatusCode::InternalServerError);
                 }
             },
             None => {
-                tide::log::error!("Cannot get PooledConnection");
+                brickpack::log::error!("Cannot get PooledConnection");
                 return Response::new(StatusCode::InternalServerError);
             }
         };
@@ -63,7 +63,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             }
             Err(error) => {
                 let msg = format!("model::show_tables -> Err({})", error);
-                tide::log::error!("{}", msg);
+                brickpack::log::error!("{}", msg);
                 Response::new(StatusCode::InternalServerError)
             }
         }

@@ -1,6 +1,6 @@
 use brickpack::global_state::State;
 use smol::block_on as smol_block_on;
-use tide::{Request, Response, StatusCode};
+use brickpack::{Request, Response, StatusCode};
 
 use crate::api::{Coluna, Table};
 
@@ -12,7 +12,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
     let mut request = match option_req {
         Some(req) => req,
         None => {
-            tide::log::error!("Request is None");
+            brickpack::log::error!("Request is None");
             return Response::new(StatusCode::InternalServerError);
         }
     };
@@ -21,7 +21,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         let table_struct: Table = match request.body_json().await {
             Ok(table_name) => table_name,
             Err(error) => {
-                tide::log::error!("{}", error);
+                brickpack::log::error!("{}", error);
                 Table::default()
             }
         };
@@ -29,7 +29,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         // let colunas: Vec<Coluna> = match request.body_json().await {
         //     Ok(data) => data,
         //     Err(error) => {
-        //         tide::log::error!("Invalid Input");
+        //         brickpack::log::error!("Invalid Input");
         //         return Response::new(StatusCode::BadRequest);
         //     }
         // };
@@ -38,7 +38,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             Some(value) => value,
             None => {
                 let msg = "Table name not defined".to_string();
-                tide::log::error!("{}", &msg);
+                brickpack::log::error!("{}", &msg);
                 let mut response = Response::new(StatusCode::BadRequest);
                 response.set_body(msg);
                 return response
@@ -48,7 +48,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         let colunas: Vec<Coluna> = match table_struct.columns {
             Some(vec) => vec,
             None => {
-                tide::log::error!("No Columns defined");
+                brickpack::log::error!("No Columns defined");
                 Vec::new()
             }
         };
@@ -58,12 +58,12 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             Some(pool) => match pool.get() {
                 Ok(conn) => conn,
                 Err(error) => {
-                    tide::log::error!("{}", error);
+                    brickpack::log::error!("{}", error);
                     return Response::new(StatusCode::InternalServerError);
                 }
             },
             None => {
-                tide::log::error!("Cannot get PooledConnection");
+                brickpack::log::error!("Cannot get PooledConnection");
                 return Response::new(StatusCode::InternalServerError);
             }
         };

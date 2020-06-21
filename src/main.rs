@@ -29,7 +29,7 @@ fn main() {
     let db_conn = match connection() {
         Ok(conn) => conn,
         Err(error) => {
-            tide::log::error!("{}", error);
+            brickpack::log::error!("{}", error);
             exit(1);
         }
     };

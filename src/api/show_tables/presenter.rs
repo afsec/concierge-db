@@ -1,4 +1,4 @@
-use tide::{Request, Response, StatusCode};
+use brickpack::{Request, Response, StatusCode};
 
 use super::model;
 use super::view;
@@ -8,7 +8,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
     let request = match option_req {
         Some(req) => req,
         None => {
-            tide::log::error!("Request is None");
+            brickpack::log::error!("Request is None");
             return Response::new(StatusCode::InternalServerError);
         }
     };
@@ -18,12 +18,12 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
         Some(pool) => match pool.get() {
             Ok(conn) => conn,
             Err(error) => {
-                tide::log::error!("{}", error);
+                brickpack::log::error!("{}", error);
                 return Response::new(StatusCode::InternalServerError);
             }
         },
         None => {
-            tide::log::error!("Cannot get PooledConnection");
+            brickpack::log::error!("Cannot get PooledConnection");
             return Response::new(StatusCode::InternalServerError);
         }
     };
@@ -37,7 +37,7 @@ pub fn handler(option_req: Option<Request<State>>) -> Response {
             }
             Err(error) => {
                 let msg = format!("model::show_tables -> Err({})", error);
-                tide::log::error!("{}", msg);
+                brickpack::log::error!("{}", msg);
                 Response::new(StatusCode::InternalServerError)
             }
         }
