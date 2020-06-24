@@ -20,5 +20,5 @@ version = '1.0.114'
 
 [dependencies.brickpack]
 version = '0.9'
-# git = 'https://github.com/afsec/brickpack.git'
-path = '../brickpack/'
+git = 'https://github.com/afsec/brickpack.git'
+# path = '../brickpack/'
