@@ -88,7 +88,7 @@ pub fn read_all(conn: SqlitePooledConnection, table: String) -> Result<Vec<Vec<C
                     }
                 }
                 _ => {
-                    // Outros tipos: REAL, NULL, BLOB
+                    // TODO: Implement types: REAL, NULL, BLOB
                     brickpack::log::error!("TypeName unknown");
                     brickpack::log::error!("{:?}", column[idx].decl_type());
                     let data: String = row.get(idx).unwrap();

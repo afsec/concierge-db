@@ -1,6 +1,6 @@
 [package]
 name = 'concierge-db'
-version = '0.4.8'
+version = '0.4.9'
 authors = ['Antonio Feitosa <antonio.cfc@gmail.com>']
 edition = '2018'
 
@@ -8,7 +8,7 @@ edition = '2018'
 clap = '2.33.1'
 r2d2 = '0.8.8'
 r2d2_sqlite = '0.16.0'
-smol = "0.1.16"
+smol = '0.1.18'
 
 [dependencies.rusqlite]
 features = ['bundled']
@@ -16,7 +16,7 @@ version = '0.23.1'
 
 [dependencies.serde]
 features = ['derive']
-version = '1.0.113'
+version = '1.0.114'
 
 [dependencies.brickpack]
 version = '0.8'
