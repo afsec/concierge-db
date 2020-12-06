@@ -11,3 +11,8 @@ The whole microservice is built with static compiling using **MUSL** target.
 - [ ] Implement SQLite types: REAL, NULL, BLOB
 - [ ] Implement env var defined LOG LEVEL
 - [ ] Implement r2d2 pooling
+- [ ] Implement SSL
+- [ ] Implement Maintenance Mode
+- [ ] Implement monitor stats
+- [ ] Implement open sessions
+- [ ] Implement backup database
