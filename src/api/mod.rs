@@ -1,53 +1,32 @@
-pub mod insert_row;
-pub mod read_all;
-pub mod read_count;
-pub mod show_columns;
 pub mod show_tables;
-pub mod update_field;
+pub mod query;
 
-use serde::{Deserialize, Serialize};
+// mod query {
+//     use serde::Serialize;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum StatusMessage {
-    InvalidInput(String),
-    Saved,
-    DatabaseError(String),
-    MissingId,
-    MalformedId,
+//     #[derive(Debug, Serialize)]
+//     struct Result(Vec<Line>);
 
-    // NotSaved,
-    // SerdeError(String),
-    // ConnectionError(String),
-    // NotProcessed(String),
-    // NotImplemented,
-    // UnderMaintenance,
-}
+//     #[derive(Debug, Serialize)]
+//     struct Line(Vec<Column>);
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BodyResponse {
-    pub status: StatusMessage,
-}
+//     #[derive(Debug, Serialize)]
+//     struct Column {
+//         field_name: String,
+//         field_data: SQLiteType,
+//     }
 
-#[derive(Deserialize, Debug, Default)]
-pub struct Table {
-    table: Option<String>,
-    columns: Option<Vec<Coluna>>
-}
+//     #[derive(Debug, Serialize)]
+//     enum SQLiteType {
+//         Integer(u16),
+//         Real(f32),
+//         Text(String),
+//         Null,
+//     }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Coluna {
-    column_name: String,
-    data: ColunaData,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub enum ColunaData {
-    Text(String),
-    Integer(i32),
-    //TODO: Implement SQLite `REAL` type
-    // Real(f32),
-    Boolean(bool),
-    Datetime(i32),
-    Null(()),
-    Unknown(String),
-}
+//     impl Default for SQLiteType {
+//         fn default() -> Self {
+//             Self::Null
+//         }
+//     }
+// }

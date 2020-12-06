@@ -1,10 +1,10 @@
-use super::{InternalMessage, ShowTables};
+use super::{QueryDatabase, InternalMessage};
 
 use brickpack::endpoint::{Name, View};
 use serde_json::to_string as serde_json_to_string;
 use tide::{http::mime, Error as TideError, Response, StatusCode};
 
-impl View<InternalMessage> for ShowTables {
+impl View<InternalMessage> for QueryDatabase {
     fn view(&self, result: Result<InternalMessage, TideError>) -> Response {
         let mut response = Response::builder(StatusCode::Ok)
             .content_type(mime::JSON)

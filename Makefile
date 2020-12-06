@@ -1,18 +1,23 @@
 all: build run
 
+release:
+	./scripts/build.sh
 
 build:
-	./scripts/build.sh
+	./scripts/build.sh -d
 
 check:
 	./scripts/check.sh
 
-run:
-	./scripts/run.sh
+fetch:
+	./scripts/fetch.sh
 
 clean:
 	rm -rf ./dist
 	cargo clean
+
+run:
+	./scripts/run.sh
 
 deploy:
 	./scripts/deploy.sh
