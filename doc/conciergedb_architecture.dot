@@ -1,0 +1,55 @@
+strict digraph ConciergeDB {
+    graph [rankdir="LR" pad="0.5" nodesep="1" ranksep="1" labelloc="top" label="ConciergeDB\nArchitecture\n\n"];
+    // RANKS
+
+
+    // NODES
+    node [shape="rectangle" width="2" height="1" fontname="Ubuntu Mono" labeljust="l" nojustify="true"];
+
+    subgraph cluster_main_component {
+        label="Main Component"
+        dispatcher [label="dispatcher()"];
+        tide [style="filled" label="HTTP Server\n(Tide)"];
+    }
+
+    subgraph cluster_show_databases {
+        graph [fontname="Ubuntu Mono", label="Endpoint: /api/show_tables"];
+        show_databases_presenter [color="blue" label="presenter()"];
+        show_databases_model [color="red" label="model(request_body) ->\nResult<InternalMessage, TideError>"];
+        show_databases_view [color="green" label="view(Result<InternalMessage, TideError>)\ntide::Response"];
+    }
+
+    subgraph cluster_use_database {
+        graph [fontname="Ubuntu Mono", label="Endpoint: /api/query"];
+        use_database_presenter  [color="blue" label="presenter()\nserde_json::from_str(&body_json)"];
+        use_database_model [color="red" label="model(request_body)Result<InternalMessage, TideError>"];
+        use_database_view [color="green" label="view(Result<InternalMessage, TideError>)\ntide::Response"];
+
+    }
+
+    user [shape="none" width="1" height="1" label="\n\n\n\n\n\n\n\n\Frontend" image="user.png"];
+
+    // EDGES
+    edge [ fontname="Ubuntu Mono"];
+
+    user -> tide[label="Request"];
+
+    tide -> dispatcher;
+
+    // Endpoint: "/show_databases"
+    dispatcher -> show_databases_presenter [label="1: tide::Request"];
+    show_databases_presenter -> show_databases_model [label="2: String"];
+    show_databases_model -> show_databases_presenter [label="3: Outcome" style="dashed"];
+    show_databases_presenter -> show_databases_view [label="4: Outcome"];
+    show_databases_view -> show_databases_presenter [label="5: Outcome" style="dashed"];
+    show_databases_presenter -> dispatcher [label="6: tide::Response" style="dashed"];
+
+    // Endpoint: "/use_database"
+    dispatcher -> use_database_presenter [label="1: tide::Request"];
+    use_database_presenter -> use_database_model [label="2: String"];
+    use_database_model -> use_database_presenter [label="3: Outcome" style="dashed"];
+    use_database_presenter -> use_database_view [label="4: Outcome"];
+    use_database_view -> use_database_presenter [label="5: Outcome" style="dashed"];
+    use_database_presenter -> dispatcher [label="6: tide::Response" style="dashed"];
+
+}

@@ -16,3 +16,4 @@ The whole microservice is built with static compiling using **MUSL** target.
 - [ ] Implement monitor stats
 - [ ] Implement open sessions
 - [ ] Implement backup database
+- [ ] Sanitize user input

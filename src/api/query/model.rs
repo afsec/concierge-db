@@ -23,6 +23,7 @@ impl Model<InternalMessage> for QueryDatabase {
     }
 }
 
+//* Helper
 pub fn query_database(conn: Connection, query: String) -> RusqliteResult<Vec<Vec<Column>>> {
     tide::log::info!("SQL_QUERY: {}", &query);
     let mut stmt = conn.prepare(&query)?;
